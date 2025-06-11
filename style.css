@@ -1,0 +1,110 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+}
+.sidebar {
+    background-color: #4a2c2a;
+}
+.sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.sidebar-link {
+    color: #e2d8c3;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 500;
+}
+.sidebar-link:hover, .sidebar-link.active {
+    background-color: #6f4e37;
+    color: white;
+}
+.sidebar-link i {
+    width: 24px;
+}
+.btn-primary-custom {
+    background-color: #c86a2d;
+    border-color: #c86a2d;
+    transition: background-color 0.2s;
+}
+.btn-primary-custom:hover {
+    background-color: #a15524;
+    border-color: #a15524;
+}
+.table-header-custom {
+    background-color: #6f4e37;
+}
+.modal-header-custom {
+    background-color: #6f4e37;
+}
+/* Estilos da Página de Login */
+.login-banner {
+    background-image: url('https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=1974&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    animation: slide-in-left 0.8s ease-out;
+}
+.login-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.login-banner > * {
+    position: relative;
+    z-index: 10;
+}
+.login-form-container {
+    animation: slide-in-right 0.8s ease-out;
+}
+
+
+/* Estilos da Aplicação */
+.card {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    border: none;
+}
+.chart-container {
+    position: relative;
+    height: 40vh;
+    max-height: 350px;
+}
+.pos-cart::-webkit-scrollbar { width: 8px; }
+.pos-cart::-webkit-scrollbar-track { background: #e5e7eb; }
+.pos-cart::-webkit-scrollbar-thumb { background: #a15524; border-radius: 4px; }
+
+/* Animação do Modal */
+.modal-content {
+    animation: slide-up 0.3s ease-out;
+}
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes slide-in-left {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes slide-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
