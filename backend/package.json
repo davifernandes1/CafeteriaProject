@@ -1,0 +1,26 @@
+{
+  "name": "cafeteriaproject",
+  "version": "1.0.0",
+  "description": "**Café & Gestão** é um sistema web completo, desenhado como uma solução **full stack** para simular e gerir as operações diárias de uma cafetaria moderna. O projeto demonstra o desenvolvimento de uma arquitetura cliente-servidor robusta, intuitiva e funcional.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davifernandes1/CafeteriaProject.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davifernandes1/CafeteriaProject/issues"
+  },
+  "homepage": "https://github.com/davifernandes1/CafeteriaProject#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mssql": "^11.0.1"
+  }
+}
