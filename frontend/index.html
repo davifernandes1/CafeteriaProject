@@ -7,6 +7,7 @@
     <title>Café & Gestão</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,14 +22,14 @@
     <!-- Ecrã de Login -->
     <div id="login-page" class="flex flex-col md:flex-row w-full h-screen">
         <div class="login-banner hidden md:flex w-full md:w-1/2 items-center justify-center p-12 text-white flex-col">
-            <i class="fas fa-coffee text-7xl mb-4"></i>
+            <img src="./assets/logo.png" alt="Logo Café & Gestão" class="h-32 w-48 mb-4">
             <h1 class="text-4xl font-bold mb-2">Café & Gestão</h1>
             <p class="text-lg italic">"O melhor grão para o seu negócio."</p>
         </div>
         <div class="w-full md:w-1/2 flex items-center justify-center p-8 bg-gray-100">
             <div class="login-form-container w-full max-w-md">
                 <div class="text-center mb-8 md:hidden">
-                    <i class="fas fa-coffee text-5xl text-[#4a2c2a]"></i>
+                    <img src="./assets/logo.png" alt="Logo Café & Gestão" class="h-16 w-16 mx-auto">
                     <h1 class="text-2xl font-bold text-gray-800 mt-2">Café & Gestão</h1>
                 </div>
                 <h2 class="text-3xl font-bold mb-2 text-center md:text-left">Bem-vindo!</h2>
@@ -55,8 +56,8 @@
 
             <aside class="sidebar w-64 flex-shrink-0 flex flex-col bg-[#4a2c2a] text-white">
                 <div class="sidebar-header h-20 flex items-center justify-center border-b border-gray-700">
-                    <i class="fas fa-coffee text-3xl mr-3"></i>
-                    <span class="text-xl font-bold">Café & Gestão</span>
+                <span class="text-xl font-bold">Café & Gestão</span>
+
                 </div>
                 <nav class="flex-1 px-4 py-6 space-y-2">
                     <a href="#dashboard" class="sidebar-link active flex items-center py-2.5 px-4 rounded-lg"><i class="fas fa-chart-pie fa-fw mr-3"></i><span>Dashboard</span></a>
@@ -70,7 +71,7 @@
             </aside>
 
             <div class="flex-1 flex flex-col overflow-hidden">
-
+                <!-- O restante do main content permanece igual -->
                 <main id="dashboard-page" class="flex-1 overflow-x-hidden overflow-y-auto p-6">
                     <h1 class="text-3xl font-bold">Dashboard</h1>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
@@ -85,28 +86,42 @@
                             <div class="chart-container mt-4"><canvas id="salesChart"></canvas></div>
                         </div>
                         <div class="card p-4">
-                            <h3 class="text-xl font-bold">Estoque Baixo</h3>
+                            <h3 class="text-xl font-bold">Situação do Estoque</h3>
                             <ul id="low-Estoque-list" class="mt-4 space-y-2"></ul>
-                            <!-- Container para o segundo gráfico -->
                             <div id="stock-chart-container"></div>
                         </div>
                     </div>
                 </main>
 
-                <main id="pdv-page" class="flex-1 overflow-hidden p-4 hidden">
-                    <div class="flex h-full rounded-lg">
-                        <div class="w-3/5 bg-white p-4 overflow-y-auto rounded-lg shadow-md">
-                            <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Selecione uma Mesa</h2><div id="tables-grid" class="flex flex-wrap gap-3"></div></div>
-                            <hr class="mb-4">
-                            <h2 id="pos-title" class="text-2xl font-bold mb-4">Selecione os Produtos</h2>
-                            <div id="pos-product-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                <main id="pdv-page" class="flex-1 overflow-hidden hidden">
+                    <div class="h-full flex flex-col p-6">
+                        <div class="flex-shrink-0 pb-4">
+                            <h1 class="text-3xl font-bold">Ponto de Venda</h1>
                         </div>
-                        <div class="w-2/5 bg-gray-50 p-4 flex flex-col ml-4 rounded-lg shadow-md">
-                            <h2 class="text-2xl font-bold mb-4 border-b pb-2">Pedido Atual</h2>
-                            <div id="pos-cart-items" class="flex-1 overflow-y-auto pos-cart"><p class="text-gray-500 text-center mt-8">Selecione uma mesa para começar.</p></div>
-                            <div class="border-t mt-auto pt-4">
-                                <div class="flex justify-between font-bold text-xl"><span>Total:</span><span id="pos-cart-total">R$ 0,00</span></div>
-                                <button id="finalize-sale-btn" class="w-full mt-4 btn-primary-custom text-white font-bold py-3 rounded-lg text-lg" disabled>Finalizar Venda</button>
+                        <div class="flex-1 flex h-full overflow-hidden gap-6">
+                            <div class="w-3/5 flex flex-col h-full">
+                                <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                                    <h2 class="text-xl font-bold mb-4">Ambiente</h2>
+                                    <div id="tables-grid" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4"></div>
+                                </div>
+                                <div class="flex-1 bg-white rounded-lg shadow-md p-4 flex flex-col">
+                                    <div class="flex justify-between items-center mb-4">
+                                         <h2 class="text-xl font-bold">Cardápio</h2>
+                                         <div class="relative w-1/2">
+                                            <input type="text" id="product-search" placeholder="Buscar produto..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A16207]">
+                                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                         </div>
+                                    </div>
+                                    <div id="pos-product-list" class="flex-1 overflow-y-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pr-2"></div>
+                                </div>
+                            </div>
+                            <div class="w-2/5 bg-white p-4 flex flex-col rounded-lg shadow-md">
+                                <h2 class="text-2xl font-bold mb-4 border-b pb-2">Pedido: <span id="pedido-atual-identificador" class="text-[#A16207]">Nenhum</span></h2>
+                                <div id="pos-cart-items" class="flex-1 overflow-y-auto pos-cart"><p class="text-gray-500 text-center mt-8">Selecione uma mesa ou "Venda ao Balcão" para começar.</p></div>
+                                <div class="border-t mt-auto pt-4">
+                                    <div class="flex justify-between font-bold text-xl mb-4"><span>Total:</span><span id="pos-cart-total">R$ 0,00</span></div>
+                                    <button id="finalize-sale-btn" class="w-full btn-primary-custom text-white font-bold py-3 rounded-lg text-lg" disabled>Finalizar Venda</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -116,7 +131,7 @@
                     <div class="flex justify-between items-center mb-4"><h1 class="text-3xl font-bold">Histórico de Vendas</h1></div>
                     <div class="card overflow-hidden">
                         <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left"><thead class="table-header-custom text-white"><tr><th class="p-3">ID Venda</th><th class="p-3">Mesa/Balcão</th><th class="p-3">Data</th><th class="p-3">Total</th><th class="p-3">Itens</th></tr></thead><tbody id="sales-report-table-body"></tbody></table>
+                            <table class="w-full text-sm text-left"><thead class="table-header-custom text-white"><tr><th class="p-3">ID Venda</th><th class="p-3">Mesa/Balcão</th><th class="p-3">Data</th><th class="p-3">Total</th><th class="p-3">Vendido por</th></tr></thead><tbody id="sales-report-table-body"></tbody></table>
                         </div>
                     </div>
                 </main>
@@ -132,7 +147,6 @@
                         </div>
                     </div>
                 </main>
-
             </div>
         </div>
     </div>
@@ -141,9 +155,8 @@
     <div id="product-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
         <div class="modal-content bg-white rounded-lg shadow-2xl w-full max-w-lg">
             <div class="modal-header-custom text-white p-4 flex justify-between items-center rounded-t-lg">
-                <h3 id="modal-title" class="text-xl font-bold">Adicionar Novo Produto</h3>
-                <!-- CORREÇÃO: Adicionado onclick -->
-                <button class="close-modal-btn text-white hover:text-gray-300 text-2xl" onclick="closeModalWindows()">&times;</button>
+                <h3 id="modal-title" class="text-xl font-bold"></h3>
+                <button type="button" class="close-modal-btn text-white hover:text-gray-300 text-2xl">&times;</button>
             </div>
             <div class="p-6">
                 <form id="product-form">
@@ -155,28 +168,8 @@
                         <div class="mb-3"><label for="product-Estoque" class="block text-sm font-bold mb-2">Estoque Inicial</label><input type="number" id="product-Estoque" class="shadow-sm border rounded w-full py-2 px-3" required></div>
                     </div>
                     <div class="flex justify-end mt-4 border-t pt-4">
-                        <!-- CORREÇÃO: Adicionado onclick e type="button" -->
-                        <button type="button" class="close-modal-btn bg-gray-200 hover:bg-gray-300 font-bold py-2 px-4 rounded-lg mr-2" onclick="closeModalWindows()">Cancelar</button>
+                        <button type="button" class="close-modal-btn bg-gray-200 hover:bg-gray-300 font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
                         <button type="submit" class="btn-primary-custom text-white font-bold py-2 px-4 rounded-lg">Guardar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="add-Estoque-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-lg shadow-2xl w-full max-w-sm">
-            <div class="modal-header-custom text-white p-4 flex justify-between items-center rounded-t-lg">
-                <h3 id="add-Estoque-modal-title" class="text-xl font-bold">Adicionar ao Estoque</h3>
-                <button class="close-modal-btn text-white hover:text-gray-300 text-2xl" onclick="closeModalWindows()">&times;</button>
-            </div>
-            <div class="p-6">
-                <form id="add-Estoque-form">
-                    <input type="hidden" id="add-Estoque-product-id">
-                    <div class="mb-3"><label for="add-Estoque-quantity" class="block text-sm font-bold mb-2">Quantidade a Adicionar</label><input type="number" id="add-Estoque-quantity" class="shadow-sm border rounded w-full py-2 px-3" required min="1"></div>
-                    <div class="flex justify-end mt-4 border-t pt-4">
-                        <button type="button" class="close-modal-btn bg-gray-200 hover:bg-gray-300 font-bold py-2 px-4 rounded-lg mr-2" onclick="closeModalWindows()">Cancelar</button>
-                        <button type="submit" class="btn-primary-custom text-white font-bold py-2 px-4 rounded-lg">Confirmar</button>
                     </div>
                 </form>
             </div>
@@ -186,11 +179,11 @@
     <div id="delete-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
         <div class="modal-content bg-white rounded-lg shadow-2xl w-full max-w-sm text-center p-6">
             <i class="fas fa-trash-alt text-red-500 text-4xl mb-4"></i>
-            <h3 class="text-lg font-bold mb-2">Confirmar Eliminação</h3>
-            <p class="text-sm text-gray-600 mb-6">Deseja eliminar "<span id="delete-product-name" class="font-bold"></span>"?</p>
+            <h3 class="text-lg font-bold mb-2">Confirmar Desativação</h3>
+            <p class="text-sm text-gray-600 mb-6">Deseja desativar "<span id="delete-product-name" class="font-bold"></span>"?<br>O produto não aparecerá em novas vendas.</p>
             <div class="flex justify-center gap-4">
-                <button class="close-modal-btn bg-gray-300 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg" onclick="closeModalWindows()">Cancelar</button>
-                <button id="confirm-delete-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg">Eliminar</button>
+                <button type="button" class="close-modal-btn bg-gray-300 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg">Cancelar</button>
+                <button id="confirm-delete-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg">Desativar</button>
             </div>
         </div>
     </div>
@@ -199,11 +192,11 @@
         <div class="modal-content bg-white rounded-lg shadow-2xl w-full max-w-md">
             <div class="modal-header-custom text-white p-4 flex justify-between items-center rounded-t-lg">
                 <h3 class="text-xl font-bold">Detalhes do Produto</h3>
-                <button class="close-modal-btn text-white hover:text-gray-300 text-2xl" onclick="closeModalWindows()">&times;</button>
+                <button type="button" class="close-modal-btn text-white hover:text-gray-300 text-2xl">&times;</button>
             </div>
             <div id="view-product-content" class="p-6"></div>
             <div class="p-4 border-t text-right">
-                <button class="close-modal-btn bg-gray-200 hover:bg-gray-300 font-bold py-2 px-4 rounded-lg" onclick="closeModalWindows()">Fechar</button>
+                <button type="button" class="close-modal-btn bg-gray-200 hover:bg-gray-300 font-bold py-2 px-4 rounded-lg">Fechar</button>
             </div>
         </div>
     </div>

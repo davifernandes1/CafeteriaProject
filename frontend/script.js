@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. CONFIGURAÇÃO E VARIÁVEIS GLOBAIS
     const API_URL = 'http://localhost:3000/api';
 
+    // Elementos da DOM
     const loginPage = document.getElementById('login-page');
     const appContainer = document.getElementById('app-container');
     const loginForm = document.getElementById('login-form');
@@ -10,15 +11,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const productModal = document.getElementById('product-modal');
     const deleteModal = document.getElementById('delete-modal');
     const viewProductModal = document.getElementById('view-product-modal');
+    const productSearchInput = document.getElementById('product-search');
 
+    // Variáveis de estado
     let products = [];
     let sales = [];
     let tables = Array.from({ length: 6 }, (_, i) => ({ id: i + 1, status: 'free', order: [] }));
     let posCart = [];
     let currentTableId = null;
     let currentUser = null;
-    let salesChart;
-    let stockChart;
+    let salesChart, stockChart;
 
     // 2. FUNÇÃO HELPER PARA API
     async function fetchApi(endpoint, options = {}) {
@@ -91,15 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
             renderDashboard();
         },
         '#pdv': async () => { 
-            if (products.length === 0) {
-                products = await fetchApi('/produtos');
-            }
+            if (products.length === 0) products = await fetchApi('/produtos');
             renderPdv(); 
         },
         '#vendas': async () => { sales = await fetchApi('/vendas'); renderSalesLog(); },
         '#produtos': async () => { products = await fetchApi('/produtos'); renderProductTable(); },
     };
     
+    // --- Funções que desenham a UI ---
     function renderDashboard() {
         const today = new Date().toDateString();
         const todaySales = sales.filter(s => new Date(s.data_venda).toDateString() === today);
@@ -132,30 +133,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (salesChart) salesChart.destroy();
             salesChart = new Chart(salesCtx, {
                 type: 'line',
-                data: { labels: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'], datasets: [{ label: 'Vendas (R$)', data: sales.reduce((acc, sale) => { acc[new Date(sale.data_venda).getDay()] += Number(sale.valor_total); return acc; }, new Array(7).fill(0)), backgroundColor: 'rgba(200, 106, 45, 0.2)', borderColor: '#c86a2d', borderWidth: 3, tension: 0.3, fill: true }] },
+                data: { labels: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'], datasets: [{ label: 'Vendas (R$)', data: sales.reduce((acc, sale) => { acc[new Date(sale.data_venda).getDay()] += Number(sale.valor_total); return acc; }, new Array(7).fill(0)), backgroundColor: 'rgba(161, 98, 7, 0.2)', borderColor: '#A16207', borderWidth: 3, tension: 0.3, fill: true }] },
                 options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
             });
         }
-        const stockContainer = document.getElementById('low-Estoque-list').parentElement;
-        let chartDiv = document.getElementById('stock-chart-container');
-        if (!chartDiv) {
-            chartDiv = document.createElement('div');
-            chartDiv.id = 'stock-chart-container';
-            chartDiv.innerHTML = '<h3 class="text-xl font-bold mt-6">Top 5 Produtos em Estoque</h3><div class="chart-container mt-4"><canvas id="stockChart"></canvas></div>';
-            stockContainer.appendChild(chartDiv);
-        }
-        const stockCtx = document.getElementById('stockChart')?.getContext('2d');
-        if (stockCtx) {
-            const sortedProducts = [...products].sort((a, b) => b.quantidade_estoque - a.quantidade_estoque).slice(0, 5);
-            if (stockChart) stockChart.destroy();
-            stockChart = new Chart(stockCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: sortedProducts.map(p => p.nome_produto),
-                    datasets: [{ label: 'Estoque', data: sortedProducts.map(p => p.quantidade_estoque), backgroundColor: ['#c86a2d', '#6f4e37', '#e2d8c3', '#a15524', '#4a2c2a'], hoverOffset: 4 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
-            });
+        const stockContainer = document.getElementById('stock-chart-container');
+        if (stockContainer) {
+            let chartCanvas = document.getElementById('stockChart');
+            if(!chartCanvas) {
+                stockContainer.innerHTML = '<h3 class="text-xl font-bold mt-6">Top 5 Produtos em Estoque</h3><div class="chart-container mt-4"><canvas id="stockChart"></canvas></div>';
+                chartCanvas = document.getElementById('stockChart');
+            }
+            const stockCtx = chartCanvas.getContext('2d');
+            if (stockCtx) {
+                const sortedProducts = [...products].sort((a, b) => b.quantidade_estoque - a.quantidade_estoque).slice(0, 5);
+                if (stockChart) stockChart.destroy();
+                stockChart = new Chart(stockCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: sortedProducts.map(p => p.nome_produto),
+                        datasets: [{ label: 'Estoque', data: sortedProducts.map(p => p.quantidade_estoque), backgroundColor: ['#A16207', '#3A2E2A', '#E7E5E4', '#854D0E', '#57534E'], hoverOffset: 4 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
+                });
+            }
         }
     }
     
@@ -188,18 +189,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const estoqueStatus = p.quantidade_estoque > 10 ? 'ok' : (p.quantidade_estoque > 0 ? 'low' : 'empty');
             const statusInfo = { ok: { text: 'OK', color: 'bg-green-100 text-green-800' }, low: { text: 'Baixo', color: 'bg-yellow-100 text-yellow-800' }, empty: { text: 'Esgotado', color: 'bg-red-100 text-red-800' } };
             const isAdmin = currentUser && currentUser.cargo === 'Administrador';
-            const adminButtons = `<button onclick="openEditModal(${p.id_produto})" class="text-gray-500 hover:text-purple-600 p-2" title="Editar"><i class="fas fa-pencil-alt"></i></button> <button onclick="openDeleteModal(${p.id_produto})" class="text-gray-500 hover:text-red-600 p-2" title="Eliminar"><i class="fas fa-trash-alt"></i></button>`;
-            productTableBody.innerHTML += `<tr><td class="p-3"><img src="${p.imagem_url}" onerror="this.src='https://placehold.co/48x48/EEE/31343C?text=Sem+Img'" alt="${p.nome_produto}" class="w-12 h-12 object-cover rounded-md"></td><td class="p-3 font-bold">${p.nome_produto}</td><td class="p-3">R$ ${Number(p.preco).toFixed(2).replace('.', ',')}</td><td class="p-3">${p.quantidade_estoque} un.</td><td class="p-3"><span class="px-2 py-1 text-xs font-semibold rounded-full ${statusInfo[estoqueStatus].color}">${statusInfo[estoqueStatus].text}</span></td><td class="p-3 text-center whitespace-nowrap"><button onclick="openViewModal(${p.id_produto})" class="text-gray-500 hover:text-blue-600 p-2" title="Visualizar"><i class="fas fa-eye"></i></button>${isAdmin ? adminButtons : ''}</td></tr>`;
+            const adminButtons = `<button data-action="edit" data-id="${p.id_produto}" class="text-gray-500 hover:text-purple-600 p-2" title="Editar"><i class="fas fa-pencil-alt"></i></button> <button data-action="delete" data-id="${p.id_produto}" class="text-gray-500 hover:text-red-600 p-2" title="Desativar"><i class="fas fa-trash-alt"></i></button>`;
+            
+            productTableBody.innerHTML += `<tr><td class="p-3"><img src="${p.imagem_url}" onerror="this.src='https://placehold.co/48x48/EEE/31343C?text=Sem+Img'" alt="${p.nome_produto}" class="w-12 h-12 object-cover rounded-md"></td><td class="p-3 font-bold">${p.nome_produto}</td><td class="p-3">R$ ${Number(p.preco).toFixed(2).replace('.', ',')}</td><td class="p-3">${p.quantidade_estoque} un.</td><td class="p-3"><span class="px-2 py-1 text-xs font-semibold rounded-full ${statusInfo[estoqueStatus].color}">${statusInfo[estoqueStatus].text}</span></td><td class="p-3 text-center whitespace-nowrap"><button data-action="view" data-id="${p.id_produto}" class="text-gray-500 hover:text-blue-600 p-2" title="Visualizar"><i class="fas fa-eye"></i></button>${isAdmin ? adminButtons : ''}</td></tr>`;
         });
     }
 
-    function renderPosProducts() {
+    function renderPosProducts(filteredProducts = products) {
         const productListEl = document.getElementById('pos-product-list');
         productListEl.innerHTML = '';
-        products.forEach(p => {
+        if (filteredProducts.length === 0) {
+            productListEl.innerHTML = `<p class="col-span-full text-center text-gray-500">Nenhum produto encontrado.</p>`;
+            return;
+        }
+        filteredProducts.forEach(p => {
             const card = document.createElement('div');
-            card.className = `border rounded-lg shadow-sm cursor-pointer transition-transform transform hover:scale-105 ${p.quantidade_estoque > 0 ? 'bg-white' : 'bg-gray-200 opacity-50'}`;
-            card.innerHTML = `<img src="${p.imagem_url}" onerror="this.src='https://placehold.co/100x96/EEE/31343C?text=Sem+Img'" class="w-full h-24 object-cover rounded-t-lg"><div class="p-2 text-center"><h6 class="text-sm font-bold truncate">${p.nome_produto}</h6></div>`;
+            card.className = `card flex flex-col items-center p-2 rounded-lg shadow-sm cursor-pointer transition-transform transform hover:scale-105 ${p.quantidade_estoque > 0 ? 'bg-white' : 'bg-gray-200 opacity-50'}`;
+            card.innerHTML = `<img src="${p.imagem_url}" onerror="this.src='https://placehold.co/100x96/EEE/31343C?text=Sem+Img'" class="w-full h-24 object-cover rounded-md mb-2"><div class="text-center"><h6 class="text-sm font-bold truncate">${p.nome_produto}</h6><p class="text-xs text-gray-500">R$ ${Number(p.preco).toFixed(2)}</p></div>`;
             if (p.quantidade_estoque > 0) card.onclick = () => addToCart(p.id_produto);
             productListEl.appendChild(card);
         });
@@ -208,20 +214,37 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderTablesGridForPdv() {
         const tablesGrid = document.getElementById('tables-grid');
         tablesGrid.innerHTML = '';
-        const counterSaleBtn = document.createElement('button');
-        counterSaleBtn.className = `p-2 rounded-lg font-bold transition h-10 ${currentTableId === 'balcao' ? 'bg-[#4a2c2a] text-white ring-2 ring-offset-2 ring-[#4a2c2a]' : 'bg-blue-500 text-white'} hover:opacity-80`;
-        counterSaleBtn.innerHTML = `<i class="fas fa-store mr-2"></i> Balcão`;
-        counterSaleBtn.onclick = () => selectPdvTable('balcao');
-        tablesGrid.appendChild(counterSaleBtn);
+        const pedidoIdentificador = document.getElementById('pedido-atual-identificador');
+        const counterCard = document.createElement('div');
+        const isBalcaoActive = currentTableId === 'balcao';
+        counterCard.className = `p-2 rounded-lg font-semibold text-center cursor-pointer transition-all duration-200 border-2 ${isBalcaoActive ? 'bg-[#A16207] text-white border-transparent' : 'bg-gray-100 hover:bg-gray-200 border-gray-200'}`;
+        counterCard.innerHTML = `<i class="fas fa-store mr-2"></i><span>Balcão</span>`;
+        counterCard.onclick = () => selectPdvTable('balcao');
+        tablesGrid.appendChild(counterCard);
         tables.forEach(table => {
-            const tableEl = document.createElement('button');
-            tableEl.className = `p-2 rounded-lg font-bold transition w-16 h-10 ${table.id === currentTableId ? 'bg-[#4a2c2a] text-white ring-2 ring-offset-2 ring-[#4a2c2a]' : (table.status === 'occupied' ? 'bg-orange-400 text-white' : 'bg-green-500 text-white')} hover:opacity-80`;
-            tableEl.textContent = table.id;
-            tableEl.onclick = () => selectPdvTable(table.id);
-            tablesGrid.appendChild(tableEl);
+            const tableCard = document.createElement('div');
+            const isActive = table.id === currentTableId;
+            let stateClass = '';
+            if (isActive) {
+                stateClass = 'bg-[#A16207] text-white border-transparent';
+                pedidoIdentificador.textContent = `Mesa ${table.id}`;
+            } else if (table.status === 'occupied') {
+                stateClass = 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200';
+            } else {
+                stateClass = 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200';
+            }
+            tableCard.className = `p-2 rounded-lg font-semibold text-center cursor-pointer transition-all duration-200 border-2 ${stateClass}`;
+            tableCard.innerHTML = `<i class="fas fa-chair mr-2"></i><span>${table.id}</span>`;
+            tableCard.onclick = () => selectPdvTable(table.id);
+            tablesGrid.appendChild(tableCard);
         });
+        if(isBalcaoActive) {
+            pedidoIdentificador.textContent = 'Venda ao Balcão';
+        } else if (!currentTableId) {
+            pedidoIdentificador.textContent = 'Nenhum';
+        }
     }
-
+    
     function renderCart() {
         const cartItemsEl = document.getElementById('pos-cart-items');
         const finalizeBtn = document.getElementById('finalize-sale-btn');
@@ -238,13 +261,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('pos-cart-total').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
     }
 
-    // 5. LÓGICA DO PDV
+    // 5. LÓGICA DO PDV E BUSCA
     function selectPdvTable(tableId) {
         currentTableId = tableId;
         posCart = tableId === 'balcao' ? [] : tables.find(t => t.id === tableId).order;
         renderPdv();
     }
-
+    
     function addToCart(productId) {
         if (currentTableId === null) { showToast("Selecione uma mesa para começar.", "error"); return; }
         const product = products.find(p => p.id_produto === productId);
@@ -288,24 +311,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 table.status = 'free'; table.order = [];
             }
             posCart = []; currentTableId = null;
-            await fetchProducts();
+            await fetchApi('/produtos').then(data => products = data);
             renderPdv();
         } catch (error) { /* erro já tratado em fetchApi */ }
+    });
+    
+    productSearchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filtered = products.filter(p => p.nome_produto.toLowerCase().includes(searchTerm));
+        renderPosProducts(filtered);
     });
 
     // 6. MANIPULAÇÃO DE MODAIS
     function closeModalWindows() {
-        document.querySelectorAll('.modal-overlay.flex').forEach(modal => {
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
             modal.classList.remove('flex');
             modal.classList.add('hidden');
         });
     }
-    
-    document.querySelectorAll('.close-modal-btn').forEach(btn => {
-        btn.addEventListener('click', (event) => {
-            event.preventDefault();
+
+    // Listener de eventos centralizado para todos os modais e ações
+    document.addEventListener('click', (e) => {
+        const target = e.target;
+        if (target.closest('.close-modal-btn') || target.classList.contains('modal-overlay')) {
+            e.preventDefault();
             closeModalWindows();
-        });
+        }
+
+        const actionButton = target.closest('button[data-action]');
+        if (actionButton) {
+            const action = actionButton.dataset.action;
+            const id = parseInt(actionButton.dataset.id);
+            if (action === 'view') openViewModal(id);
+            if (action === 'edit') openEditModal(id);
+            if (action === 'delete') openDeleteModal(id);
+        }
     });
     
     document.getElementById('add-product-btn').addEventListener('click', () => {
@@ -325,24 +365,18 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await fetchApi(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(productData) });
             showToast(id ? 'Produto atualizado!' : 'Produto criado!', 'success');
-            await fetchApi('/produtos').then(data => {
-                products = data;
-                renderProductTable();
-            });
+            await pageRenderers['#produtos']();
             closeModalWindows();
-        } catch (error) { /* erro já tratado em fetchApi */ }
+        } catch (error) { /* erro já tratado */ }
     }
 
     async function handleDeleteProduct(productId) {
         try {
             await fetchApi(`/produtos/${productId}`, { method: 'DELETE' });
             showToast('Produto desativado!', 'success');
-            await fetchApi('/produtos').then(data => {
-                products = data;
-                renderProductTable();
-            });
+            await pageRenderers['#produtos']();
             closeModalWindows();
-        } catch (error) { /* erro já tratado em fetchApi */ }
+        } catch (error) { /* erro já tratado */ }
     }
     
     document.getElementById('product-form').addEventListener('submit', handleProductFormSubmit);

@@ -28,8 +28,18 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// ROTAS DE USUÁRIOS
+router.get('/usuarios', async (req, res) => {
+    try {
+        const pool = await getConnection();
+        const result = await pool.request().query('SELECT id_usuario, nome_usuario, cargo FROM Usuarios');
+        res.json(result.recordset);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // ROTAS DE PRODUTOS
-// ATUALIZAÇÃO: Busca apenas produtos ativos
 router.get('/produtos', async (req, res) => {
     try {
         const pool = await getConnection();
@@ -52,6 +62,9 @@ router.post('/produtos', async (req, res) => {
             .execute('sp_InserirProduto');
         res.status(201).json({ message: 'Produto criado com sucesso!' });
     } catch (err) {
+        if (err.message.includes('UQ_Produtos_NomeProduto')) {
+            return res.status(409).json({ message: 'Erro: Já existe um produto com este nome.' });
+        }
         res.status(500).json({ message: err.message });
     }
 });
@@ -69,17 +82,19 @@ router.put('/produtos/:id', async (req, res) => {
             .execute('sp_AlterarProduto');
         res.status(200).json({ message: 'Produto alterado com sucesso!' });
     } catch (err) {
+        if (err.message.includes('UQ_Produtos_NomeProduto')) {
+            return res.status(409).json({ message: 'Erro: Já existe um produto com este nome.' });
+        }
         res.status(500).json({ message: err.message });
     }
 });
 
-// ATUALIZAÇÃO: A rota de DELETE agora chama a procedure de DESATIVAR
 router.delete('/produtos/:id', async (req, res) => {
     try {
         const pool = await getConnection();
         await pool.request()
             .input('id_produto', sql.Int, req.params.id)
-            .execute('sp_DesativarProduto'); // <-- MUDANÇA AQUI
+            .execute('sp_DesativarProduto');
         res.status(200).json({ message: 'Produto desativado com sucesso!' });
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -91,6 +106,18 @@ router.get('/vendas', async (req, res) => {
     try {
         const pool = await getConnection();
         const result = await pool.request().query("SELECT v.id_venda, v.data_venda, v.valor_total, v.origem, u.nome_usuario FROM Vendas v JOIN Usuarios u ON v.id_usuario = u.id_usuario ORDER BY v.data_venda DESC");
+        res.json(result.recordset);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.get('/vendas/:id', async (req, res) => {
+    try {
+        const pool = await getConnection();
+        const result = await pool.request()
+            .input('id_venda', sql.Int, req.params.id)
+            .query(`SELECT p.nome_produto, iv.quantidade, iv.valor_unitario FROM ItensVenda iv JOIN Produtos p ON iv.id_produto = p.id_produto WHERE iv.id_venda = @id_venda`);
         res.json(result.recordset);
     } catch (err) {
         res.status(500).json({ message: err.message });
