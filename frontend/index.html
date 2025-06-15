@@ -19,7 +19,6 @@
 
 <body class="antialiased text-gray-800">
 
-    <!-- Ecrã de Login -->
     <div id="login-page" class="flex flex-col md:flex-row w-full h-screen">
         <div class="login-banner hidden md:flex w-full md:w-1/2 items-center justify-center p-12 text-white flex-col">
             <img src="./assets/logo.png" alt="Logo Café & Gestão" class="h-32 w-48 mb-4">
@@ -50,7 +49,6 @@
         </div>
     </div>
 
-    <!-- Container da Aplicação Principal -->
     <div id="app-container" class="hidden">
         <div class="flex h-screen bg-gray-100">
 
@@ -71,7 +69,6 @@
             </aside>
 
             <div class="flex-1 flex flex-col overflow-hidden">
-                <!-- O restante do main content permanece igual -->
                 <main id="dashboard-page" class="flex-1 overflow-x-hidden overflow-y-auto p-6">
                     <h1 class="text-3xl font-bold">Dashboard</h1>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
@@ -93,23 +90,23 @@
                     </div>
                 </main>
 
-                <main id="pdv-page" class="flex-1 overflow-hidden hidden">
-                    <div class="h-full flex flex-col p-6">
+                <main id="pdv-page" class="flex-1 overflow-y-auto p-6 hidden">
+                    <div class="flex flex-col">
                         <div class="flex-shrink-0 pb-4">
                             <h1 class="text-3xl font-bold">Ponto de Venda</h1>
                         </div>
-                        <div class="flex-1 flex h-full overflow-hidden gap-6">
-                            <div class="w-3/5 flex flex-col h-full">
-                                <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                        <div class="flex gap-6">
+                            <div class="w-3/5 flex flex-col gap-6 min-w-0">
+                                <div class="bg-white rounded-lg shadow-md p-4">
                                     <h2 class="text-xl font-bold mb-4">Ambiente</h2>
-                                    <div id="tables-grid" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4"></div>
+                                    <div id="tables-grid" class="grid grid-cols-7 gap-2"></div>
                                 </div>
                                 <div class="flex-1 bg-white rounded-lg shadow-md p-4 flex flex-col">
                                     <div class="flex justify-between items-center mb-4">
                                          <h2 class="text-xl font-bold">Cardápio</h2>
                                          <div class="relative w-1/2">
-                                            <input type="text" id="product-search" placeholder="Buscar produto..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A16207]">
-                                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                             <input type="text" id="product-search" placeholder="Buscar produto..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A16207]">
+                                             <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                                          </div>
                                     </div>
                                     <div id="pos-product-list" class="flex-1 overflow-y-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pr-2"></div>
@@ -126,7 +123,6 @@
                         </div>
                     </div>
                 </main>
-
                 <main id="vendas-page" class="flex-1 overflow-x-hidden overflow-y-auto p-6 hidden">
                     <div class="flex justify-between items-center mb-4"><h1 class="text-3xl font-bold">Histórico de Vendas</h1></div>
                     <div class="card overflow-hidden">
@@ -151,7 +147,6 @@
         </div>
     </div>
 
-    <!-- Modals -->
     <div id="product-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
         <div class="modal-content bg-white rounded-lg shadow-2xl w-full max-w-lg">
             <div class="modal-header-custom text-white p-4 flex justify-between items-center rounded-t-lg">
