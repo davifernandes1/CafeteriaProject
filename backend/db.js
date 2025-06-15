@@ -11,8 +11,8 @@ const dbConfig = {
     server: process.env.DB_SERVER,
     database: process.env.DB_DATABASE,
     options: {
-        encrypt: false, // Use true para Azure SQL
-        trustServerCertificate: true // Necessário para conexões locais (localhost)
+        encrypt: true, 
+        trustServerCertificate: false 
     }
 };
 
